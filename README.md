@@ -68,9 +68,18 @@ curl -X POST http://localhost:3000/tasks \
 
 ```bash
 npm test
+npm run coverage
 ```
 
-Os testes funcionais cobrem caminhos felizes, validações e erros de cada endpoint. Os cenários estão em `docs/cenarios.md`.
+Os testes funcionais cobrem caminhos felizes, validações e erros de cada endpoint. Os cenários e detalhes de cobertura estão em `docs/cenarios.md` e `docs/cobertura.md`.
+
+## Relatórios
+
+Cada execução do pipeline no GitHub Actions gera e guarda os relatórios de testes (**Mochawesome**, artifact `relatorio-testes`) e de cobertura de código (**c8**, artifact `relatorio-cobertura`) como artifacts da execução, além do resumo do k6 (`resultado-k6`).
+
+Localmente, você pode gerar o relatório visual de testes com `npm run test:report` (salvo em `mochawesome-report/mochawesome.html`) e o de cobertura com `npm run coverage` (salvo em `coverage/index.html`).
+
+![Relatório de testes](docs/img/relatorio.png)
 
 ## Performance (k6)
 

@@ -23,3 +23,15 @@ Matriz de cenários funcionais da API de tarefas, mapeando cada **endpoint**, o 
 | `DELETE /tasks/:id` | Remover tarefa existente pelo `id` | `204 No Content` sem corpo e tarefa removida da listagem |
 | `DELETE /tasks/:id` | Tentar remover tarefa com `id` inexistente (ex.: `999`) | `404 Not Found` com mensagem de erro em `error` |
 | `GET /rota-inexistente` | Acessar rota não mapeada na API | `404 Not Found` com mensagem de erro em `error` |
+
+---
+
+## Cobertura Atual e Limites (`.c8rc.json`)
+
+- **Cobertura atual (`npm run coverage`):**
+  - **Lines:** `82,37%` (limite mínimo: `80%`)
+  - **Statements:** `82,37%` (limite mínimo: `80%`)
+  - **Functions:** `100,00%` (limite mínimo: `80%`)
+  - **Branches:** `84,74%` (limite mínimo: `70%`)
+- **Por que `src/server.js` ficou de fora (`"exclude": ["src/server.js"]`):**
+  - Os testes com Supertest importam diretamente o `src/app.js` sem subir o servidor HTTP via `src/server.js` (evitando abrir porta de rede). Como `src/server.js` apenas chama `app.listen(PORT)`, mantê-lo na contagem com `"all": true` geraria `0%` naquele arquivo sem refletir falta de teste nas regras de negócio. Detalhes completos em [docs/cobertura.md](cobertura.md).

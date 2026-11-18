@@ -35,7 +35,7 @@ jobs:
         with:
           name: relatorio-cobertura
           path: coverage
-          
+
   performance:
     name: Teste de performance (k6)
     runs-on: ubuntu-latest
@@ -69,3 +69,67 @@ jobs:
         with:
           name: resultado-k6
           path: resultado.json
+  publish-reports:
+    name: Publicar relatórios (GitHub Pages)
+    runs-on: ubuntu-latest
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Baixar relatório de testes
+        uses: actions/download-artifact@v4
+        with:
+          name: relatorio-testes
+          path: site/testes
+
+      - name: Baixar relatório de cobertura
+        uses: actions/download-artifact@v4
+        with:
+          name: relatorio-cobertura
+          path: site/cobertura
+
+      - name: Criar página inicial
+        run: |
+          cp site/testes/mochawesome.html site/testes/index.html
+          cat > site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="pt-BR">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>api-quality-lab: relatórios</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
+              a { display: block; margin: .75rem 0; padding: 1rem; border: 1px solid #8884; border-radius: 8px; text-decoration: none; }
+              a:hover { background: #8881; }
+              small { opacity: .7; }
+            </style>
+          </head>
+          <body>
+            <h1>api-quality-lab</h1>
+            <p>Relatórios gerados automaticamente pelo pipeline a cada push na <code>main</code>.</p>
+            <a href="testes/">Relatório de testes<br><small>Mocha + Chai + Supertest (Mochawesome)</small></a>
+            <a href="cobertura/">Cobertura de testes<br><small>Relatório do c8</small></a>
+            <a href="https://api-quality-lab.onrender.com/docs">Documentação da API (Swagger)<br><small>API no Render, pode demorar na primeira chamada</small></a>
+          </body>
+          </html>
+          EOF
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
