@@ -64,7 +64,7 @@ router.post('/', (req, res) => {
   }
 
   const created = store.create({ title: titleCheck.value, done });
-  return res.status(200).json(created);
+  return res.status(201).json(created);
 });
 
 router.put('/:id', (req, res) => {
