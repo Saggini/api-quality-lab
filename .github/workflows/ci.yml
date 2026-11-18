@@ -19,8 +19,23 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm test
 
+      - name: Testes com cobertura e relatório
+        run: npm run test:ci
+      - name: Guardar relatório de testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes
+          path: mochawesome-report
+
+      - name: Guardar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-cobertura
+          path: coverage
+          
   performance:
     name: Teste de performance (k6)
     runs-on: ubuntu-latest
